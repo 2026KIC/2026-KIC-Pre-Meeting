@@ -206,7 +206,7 @@
     line-height:1.35;
   }
   .g-datehead .wd{font-size:12px;color:var(--muted);font-weight:600;}
-  .g-datehead .wd-local{font-size:10.5px;color:var(--coral);font-weight:600;margin-top:1px;}
+  .g-datehead .wd-local{font-size:9.5px;color:var(--coral);font-weight:600;margin-top:1px;white-space:nowrap;}
   .g-hour{
     position:sticky;left:0;z-index:1;
     background:var(--card);
@@ -216,7 +216,7 @@
     white-space:nowrap;
     display:flex;flex-direction:column;justify-content:center;
   }
-  .g-hour .local{font-size:11.5px;color:var(--coral);font-weight:600;margin-top:1px;}
+  .g-hour .local{font-size:10.5px;color:var(--coral);font-weight:600;margin-top:1px;white-space:nowrap;}
   .g-cell{
     min-height:32px;
     background:#fff;
@@ -865,7 +865,7 @@
       var localDay = kstDate.toLocaleDateString('en-CA',{timeZone:userTz});
       var diffLabel = '';
       if(localDay !== ref){
-        diffLabel = (new Date(localDay) < new Date(ref)) ? (lang==='ko'?' (전날)':' (prev day)') : (lang==='ko'?' (다음날)':' (next day)');
+        diffLabel = (new Date(localDay) < new Date(ref)) ? (lang==='ko'?' -1일':' -1d') : (lang==='ko'?' +1일':' +1d');
       }
       return timeStr+diffLabel;
     }catch(e){ return ''; }
@@ -874,8 +874,12 @@
     try{
       var startD = new Date(iso+'T08:00:00+09:00').toLocaleDateString('en-CA',{timeZone:userTz});
       var endD = new Date(iso+'T21:00:00+09:00').toLocaleDateString('en-CA',{timeZone:userTz});
-      var fmt = function(dstr){ var d=parseISO(dstr); return (d.getMonth()+1)+'/'+d.getDate(); };
-      return (startD===endD) ? fmt(startD) : (fmt(startD)+'\u2013'+fmt(endD));
+      if(startD===endD){
+        var d0=parseISO(startD); return (d0.getMonth()+1)+'/'+d0.getDate();
+      }
+      var d1=parseISO(startD), d2=parseISO(endD);
+      if(d1.getMonth()===d2.getMonth()){ return (d1.getMonth()+1)+'/'+d1.getDate()+'\u2013'+d2.getDate(); }
+      return (d1.getMonth()+1)+'/'+d1.getDate()+'\u2013'+(d2.getMonth()+1)+'/'+d2.getDate();
     }catch(e){ return ''; }
   }
   function hourLabels(hour, refDateISO){
@@ -1157,7 +1161,7 @@
       updateSelCount();
       return;
     }
-    var cols = 'minmax(64px,86px) ' + activeDates.map(function(){return 'minmax(56px,1fr)';}).join(' ');
+    var cols = 'minmax(80px,110px) ' + activeDates.map(function(){return 'minmax(64px,1fr)';}).join(' ');
     var html = '<div class="grid-scroll"><div class="grid" style="grid-template-columns:'+cols+';">';
     html += '<div class="g-corner"></div>';
     activeDates.forEach(function(iso){
@@ -1316,7 +1320,7 @@
     Object.keys(counts).forEach(function(k){ if(counts[k]>maxCount) maxCount=counts[k]; });
     document.getElementById('heatmapSummary').textContent = t('respondentsPrefix')+': '+responses.length;
 
-    var cols = 'minmax(64px,86px) ' + activeDates.map(function(){return 'minmax(56px,1fr)';}).join(' ');
+    var cols = 'minmax(80px,110px) ' + activeDates.map(function(){return 'minmax(64px,1fr)';}).join(' ');
     var html = '<div class="grid-scroll"><div class="grid" style="grid-template-columns:'+cols+';">';
     html += '<div class="g-corner"></div>';
     activeDates.forEach(function(iso){
