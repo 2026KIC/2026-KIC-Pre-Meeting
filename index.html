@@ -502,7 +502,7 @@
   };
   firebase.initializeApp(firebaseConfig);
   var db = firebase.firestore();
-  var BUILD_ID = '2026-07-08-v5';
+  var BUILD_ID = '2026-07-08-v6';
 
   // ---------------- i18n ----------------
   var TEXT = {
@@ -590,7 +590,8 @@
       sessionNotFound:"세션을 찾을 수 없어요. 링크가 정확한지 확인해주세요.",
       hubLockedMsg:"세션별 개별 링크를 통해서만 접속할 수 있어요.<br>전달받은 링크가 없다면 컨퍼런스 사무국(kic@konect.or.kr)으로 문의해주세요.",
       footNote:"2026 KoNECT-MOHW-MFDS International Conference · 문의 kic@konect.or.kr<br>이 페이지의 모든 시간은 별도 표기가 없는 한 한국표준시(KST, UTC+9) 기준입니다.",
-      tzBanner:"🌐 감지된 시간대: <b>{tz}</b> — 기본적으로 굵은 시간은 한국표준시(KST), 아래 작은 글씨가 현지 시간이에요. 현지 시간을 기준으로 크게 보고 싶으시면 오른쪽의 <b>'내 시간대로 보기'</b>를 켜주세요."
+      tzBannerLocalOn:"🌐 감지된 시간대: <b>{tz}</b> — 현재 현지 시간이 표에 굵게 기준으로 표시되고, 아래 작은 글씨가 KST예요. KST를 기준으로 다시 보고 싶으시면 오른쪽의 <b>'내 시간대로 보기'</b>를 꺼주세요.",
+      tzBannerLocalOff:"🌐 감지된 시간대: <b>{tz}</b> — 현재 굵은 시간은 한국표준시(KST) 기준이며, 아래 작은 글씨가 현지 시간이에요. 현지 시간을 기준으로 크게 보고 싶으시면 오른쪽의 <b>'내 시간대로 보기'</b>를 켜주세요.",
     },
     en:{
       heroTagHub:"Session Chair Pre-Meeting Scheduler — Manage by Session",
@@ -676,7 +677,8 @@
       sessionNotFound:"Session not found. Please check that the link is correct.",
       hubLockedMsg:"This page can only be accessed via an individual session link.<br>If you don't have one, please contact the conference secretariat (kic@konect.or.kr).",
       footNote:"2026 KoNECT-MOHW-MFDS International Conference · Contact kic@konect.or.kr<br>All times on this page are in Korea Standard Time (KST, UTC+9) unless otherwise noted.",
-      tzBanner:"🌐 Detected time zone: <b>{tz}</b> — by default, the bold time in the grid is Korea Standard Time (KST) and your local time shows in small text below. Want your local time to be the main display instead? Turn on <b>'View in my time zone'</b> on the right."
+      tzBannerLocalOn:"🌐 Detected time zone: <b>{tz}</b> — your local time is currently shown as the main time in the grid, with KST as reference below. Turn off <b>'View in my time zone'</b> on the right to switch back to KST as the main display.",
+      tzBannerLocalOff:"🌐 Detected time zone: <b>{tz}</b> — the bold time in the grid is currently Korea Standard Time (KST), with your local time as reference below. Turn on <b>'View in my time zone'</b> on the right to make your local time the main display.",
     }
   };
 
@@ -898,7 +900,7 @@
     TZ_OPTIONS.forEach(function(o){
       optsHtml += '<option value="'+o.v+'"'+(manualTzOverride && userTz===o.v ? ' selected':'')+'>'+o.l+'</option>';
     });
-    container.innerHTML = '<div class="tz-banner"><span>'+t('tzBanner',{tz:friendlyTz(userTz)})+'</span>'+
+    container.innerHTML = '<div class="tz-banner"><span>'+t(localViewOn?'tzBannerLocalOn':'tzBannerLocalOff',{tz:friendlyTz(userTz)})+'</span>'+
       '<label>'+t('tzSelectLabel')+' <select id="'+sid+'">'+optsHtml+'</select></label>'+
       '<label><input type="checkbox" id="'+cid+'" '+(localViewOn?'checked':'')+'>'+t('localViewToggleLabel')+'</label></div>';
     document.getElementById(sid).addEventListener('change', function(e){
