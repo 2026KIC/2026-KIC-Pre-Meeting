@@ -295,6 +295,17 @@
   .danger-zone{border:1.5px dashed #EBBFC1;background:#FFF7F7;}
   .danger-zone h3{color:#C23B4A;}
 
+  .heatmap-info-box{
+    background:#F0EFFB;border:1.5px solid var(--lightblue);border-radius:10px;
+    padding:12px 16px;margin-bottom:12px;font-size:14.5px;color:var(--navy-soft);
+    display:flex;justify-content:space-between;align-items:flex-start;gap:10px;line-height:1.6;
+  }
+  .heatmap-info-box .close-x{
+    cursor:pointer;color:var(--muted);font-weight:800;flex:none;font-size:16px;line-height:1;
+    background:none;border:none;padding:0 2px;
+  }
+  .heatmap-info-box b{color:var(--navy);}
+
   /* Hub / session list */
   .form-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
   .form-row input[type=text]{
@@ -408,6 +419,7 @@
           <h3 id="heatHeading"></h3>
           <p class="desc" id="heatDesc"></p>
           <div id="tzBannerHeatmap"></div>
+          <div id="heatmapInfoBox" class="heatmap-info-box" style="display:none;"></div>
           <div id="heatmapSummary" style="margin-bottom:12px;font-size:13px;color:var(--muted);"></div>
           <div id="heatmapGridHolder"></div>
           <div class="legend">
@@ -515,7 +527,7 @@
   };
   firebase.initializeApp(firebaseConfig);
   var db = firebase.firestore();
-  var BUILD_ID = '2026-07-08-v9';
+  var BUILD_ID = '2026-07-08-v10';
 
   // ---------------- i18n ----------------
   var TEXT = {
@@ -534,13 +546,15 @@
       createdPrefix:"생성일",
       backToHub:"← 전체 세션 보기",
       infoOnline:"모든 사전미팅은 온라인(화상)으로 진행됩니다",
-      infoDrag:"가능하신 시간을 마우스 드래그로 선택해주세요",
+      infoDragMouse:"가능하신 시간을 마우스 드래그로 선택해주세요",
+      infoDragTouch:"가능하신 시간을 탭(터치)해서 선택해주세요",
       infoContactLabel:"문의",
       tabSchedule:"내 일정 입력",
       tabHeatmap:"전체 응답 현황",
       tabAdmin:"관리자 설정",
       schedHeading:"가능하신 시간을 선택해주세요",
-      schedDesc:"칸을 마우스로 클릭한 채 드래그하면 여러 시간을 한 번에 선택할 수 있어요. 다시 드래그하면 선택이 해제됩니다. 선택을 마친 후 아래 '제출하기' 버튼을 눌러 이름을 입력해주세요. 로그인은 필요하지 않습니다.",
+      schedDescMouse:"칸을 마우스로 클릭한 채 드래그하면 여러 시간을 한 번에 선택할 수 있어요. 다시 드래그하면 선택이 해제됩니다. 선택을 마친 후 아래 '제출하기' 버튼을 눌러 이름을 입력해주세요. 로그인은 필요하지 않습니다.",
+      schedDescTouch:"칸을 하나씩 탭하면 선택돼요. 다시 탭하면 선택이 해제됩니다. 선택을 마친 후 아래 '제출하기' 버튼을 눌러 이름을 입력해주세요. 로그인은 필요하지 않습니다.",
       legendUnselected:"선택 안 됨",
       legendSelected:"선택함",
       selCountSuffix:"개 선택됨",
@@ -624,13 +638,15 @@
       createdPrefix:"Created",
       backToHub:"← All Sessions",
       infoOnline:"All pre-meetings will be held online (video call)",
-      infoDrag:"Please select your available times by dragging with your mouse",
+      infoDragMouse:"Please select your available times by dragging with your mouse",
+      infoDragTouch:"Tap to select your available times",
       infoContactLabel:"Contact",
       tabSchedule:"My Availability",
       tabHeatmap:"Overview",
       tabAdmin:"Admin Settings",
       schedHeading:"Select your available times",
-      schedDesc:"Click and drag across the grid to select multiple time slots at once. Drag again to deselect. Once you're done, click 'Submit' below and enter your name — no login required.",
+      schedDescMouse:"Click and drag across the grid to select multiple time slots at once. Drag again to deselect. Once you're done, click 'Submit' below and enter your name — no login required.",
+      schedDescTouch:"Tap each cell to select it. Tap again to deselect. Once you're done, tap 'Submit' below and enter your name — no login required.",
       legendUnselected:"Not selected",
       legendSelected:"Selected",
       selCountSuffix:" selected",
@@ -789,13 +805,13 @@
     document.getElementById('backLink').textContent = t('backToHub');
     document.getElementById('backLink').href = buildUrl({session:null});
     document.getElementById('infoOnline').textContent = t('infoOnline');
-    document.getElementById('infoDrag').textContent = t('infoDrag');
+    document.getElementById('infoDrag').textContent = t(isTouchDevice ? 'infoDragTouch' : 'infoDragMouse');
     document.getElementById('infoContactLabel').textContent = t('infoContactLabel');
     document.getElementById('tabScheduleBtn').textContent = t('tabSchedule');
     document.getElementById('tabHeatmapBtn').textContent = t('tabHeatmap');
     document.getElementById('tabAdminBtn').textContent = t('tabAdmin');
     document.getElementById('schedHeading').textContent = t('schedHeading');
-    document.getElementById('schedDesc').textContent = t('schedDesc');
+    document.getElementById('schedDesc').textContent = t(isTouchDevice ? 'schedDescTouch' : 'schedDescMouse');
     document.getElementById('legendUnselected').textContent = t('legendUnselected');
     document.getElementById('legendSelected').textContent = t('legendSelected');
     document.getElementById('submitBtn').textContent = t('submitBtn');
@@ -1400,11 +1416,31 @@
         var bg = heatColor(c, maxCount);
         var names = (namesBySlot[k]||[]).join(', ');
         var title = c>0 ? t('peopleAvailable',{n:c})+': '+names : t('noAvailable');
-        html += '<div class="g-cell heat" style="background:'+bg+';" title="'+escapeHtml(title)+'"></div>';
+        html += '<div class="g-cell heat" style="background:'+bg+';" title="'+escapeHtml(title)+'" data-key="'+k+'"></div>';
       });
     });
     html += '</div></div>';
     holder.innerHTML = html;
+
+    var infoBox = document.getElementById('heatmapInfoBox');
+    infoBox.style.display = 'none';
+    holder.querySelectorAll('.g-cell.heat').forEach(function(cell){
+      cell.addEventListener('click', function(){
+        var k = cell.dataset.key;
+        var parts = k.split('_');
+        var d = parseISO(parts[0]);
+        var label = (d.getMonth()+1)+'/'+d.getDate()+' ('+WD[d.getDay()]+') '+parts[1]+':00\u2013'+pad((+parts[1])+1)+':00';
+        var c = counts[k]||0;
+        var names = (namesBySlot[k]||[]).join(', ');
+        var body = c>0 ? ('<b>'+label+'</b> \u2014 '+t('peopleAvailable',{n:c})+': '+escapeHtml(names)) : ('<b>'+label+'</b> \u2014 '+t('noAvailable'));
+        infoBox.innerHTML = '<span>'+body+'</span><button class="close-x" id="heatmapInfoCloseBtn">\u2715</button>';
+        infoBox.style.display = 'flex';
+        document.getElementById('heatmapInfoCloseBtn').addEventListener('click', function(ev){
+          ev.stopPropagation();
+          infoBox.style.display = 'none';
+        });
+      });
+    });
 
     var sorted = Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a]; }).slice(0,3);
     var topHtml = '';
