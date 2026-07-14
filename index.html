@@ -527,14 +527,14 @@
   };
   firebase.initializeApp(firebaseConfig);
   var db = firebase.firestore();
-  var BUILD_ID = '2026-07-08-v10';
+  var BUILD_ID = '2026-07-08-v11';
 
   // ---------------- i18n ----------------
   var TEXT = {
     ko:{
-      heroTagHub:"세션 좌장 사전미팅 일정조율 — 세션별 관리",
+      heroTagHub:"세션 연사 사전미팅 일정조율 — 세션별 관리",
       hubHeading:"새 세션 만들기",
-      hubDesc:"세션별로 사전미팅 일정조율 페이지를 만들고, 각 세션 좌장분들께 개별 링크를 전달하세요.",
+      hubDesc:"세션별로 사전미팅 일정조율 페이지를 만들고, 각 세션 연사분들께 개별 링크를 전달하세요.",
       titleKoPlaceholder:"세션 이름 (한국어)",
       titleEnPlaceholder:"Session name (English)",
       createBtn:"세션 생성",
@@ -588,19 +588,19 @@
       toastSessionDeleted:"세션이 삭제되었습니다.",
       toastRenamed:"세션 이름이 저장되었습니다.",
       toastLoadFail:"데이터를 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
-      heatHeading:"전체 좌장 응답 현황",
+      heatHeading:"전체 연사 응답 현황",
       heatDesc:"색이 진할수록 더 많은 분들이 가능하다고 응답한 시간대예요. 칸에 마우스를 올리면(모바일은 탭) 누가 가능한지 확인할 수 있습니다.",
       legend0:"0명", legendLow:"낮음", legendMed:"보통", legendHigh:"높음",
       respondentsPrefix:"응답 인원",
       topHeading:"가장 많은 인원이 가능한 시간 TOP 3",
-      listHeading:"응답한 좌장 목록",
+      listHeading:"응답한 연사 목록",
       emptyNoResponses:"아직 제출된 응답이 없어요.<br>가장 먼저 일정을 입력해보세요!",
       notEnoughData:"아직 비교할 만한 응답이 충분하지 않아요.",
       noAvailable:"아직 가능한 분이 없어요",
       peopleAvailable:"{n}명 가능",
       shareLinkHeading:"이 세션 공유 링크",
-      shareLinkDesc:"발표자/좌장분께는 '발표자용 링크'만 전달해주세요. 관리자용 링크는 날짜 설정 및 응답 삭제 권한이 포함되어 있어 조직위 내부에서만 사용해야 합니다.",
-      participantLinkLabel:"발표자/좌장용 링크 (관리 기능 없음)",
+      shareLinkDesc:"연사분께는 '연사용 링크'만 전달해주세요. 관리자용 링크는 날짜 설정 및 응답 삭제 권한이 포함되어 있어 조직위 내부에서만 사용해야 합니다.",
+      participantLinkLabel:"연사용 링크 (관리 기능 없음)",
       adminLinkLabel:"관리자용 링크 (날짜 설정 · 응답 삭제 포함)",
       localViewToggleLabel:"내 시간대로 보기",
       tzSelectLabel:"시간대:",
@@ -612,7 +612,7 @@
       saveDatesBtn:"날짜 저장하기",
       activeDateCountLabel:"선택된 날짜",
       dangerHeading:"전체 응답 초기화",
-      dangerDesc:"이 세션에 지금까지 제출된 모든 좌장의 응답을 삭제합니다. 새 라운드를 시작할 때만 사용해주세요. 되돌릴 수 없습니다.",
+      dangerDesc:"이 세션에 지금까지 제출된 모든 연사의 응답을 삭제합니다. 새 라운드를 시작할 때만 사용해주세요. 되돌릴 수 없습니다.",
       resetAllBtn:"모든 응답 삭제",
       confirmReset1:"정말로 이 세션의 모든 응답을 삭제할까요? 이 작업은 되돌릴 수 없습니다.",
       confirmReset2:"다시 한 번 확인합니다. 지금까지 제출된 모든 응답이 영구히 삭제됩니다. 계속할까요?",
@@ -624,9 +624,9 @@
       tzBannerLocalOff:"🌐 감지된 시간대: <b>{tz}</b> — 현재 굵은 시간은 한국표준시(KST) 기준이며, 아래 작은 글씨가 현지 시간이에요. 현지 시간을 기준으로 크게 보고 싶으시면 오른쪽의 <b>'내 시간대로 보기'</b>를 켜주세요.",
     },
     en:{
-      heroTagHub:"Session Chair Pre-Meeting Scheduler — Manage by Session",
+      heroTagHub:"Session Speaker Pre-Meeting Scheduler — Manage by Session",
       hubHeading:"Create New Session",
-      hubDesc:"Create a scheduling page for each session and share an individual link with each session's chairs.",
+      hubDesc:"Create a scheduling page for each session and share an individual link with each session's speakers.",
       titleKoPlaceholder:"Session name (Korean)",
       titleEnPlaceholder:"Session name (English)",
       createBtn:"Create Session",
@@ -691,8 +691,8 @@
       noAvailable:"No one available yet",
       peopleAvailable:"{n} available",
       shareLinkHeading:"Share Link for This Session",
-      shareLinkDesc:"Share only the 'Speaker/Chair link' with speakers and chairs. The admin link includes permission to edit dates and delete responses, and should stay within the organizing team.",
-      participantLinkLabel:"Speaker/Chair Link (no admin access)",
+      shareLinkDesc:"Share only the 'Speaker link' with speakers. The admin link includes permission to edit dates and delete responses, and should stay within the organizing team.",
+      participantLinkLabel:"Speaker Link (no admin access)",
       adminLinkLabel:"Admin Link (includes date settings & reset)",
       localViewToggleLabel:"View in my time zone",
       tzSelectLabel:"Time zone:",
@@ -790,7 +790,7 @@
 
   // ---------------- Static text render ----------------
   function renderStaticText(){
-    document.title = (lang==='ko' ? '세션 좌장 사전미팅 일정조율' : 'Session Chair Pre-Meeting Scheduler') + ' | 2026 KoNECT-MOHW-MFDS';
+    document.title = (lang==='ko' ? '세션 연사 사전미팅 일정조율' : 'Session Speaker Pre-Meeting Scheduler') + ' | 2026 KoNECT-MOHW-MFDS';
     document.documentElement.lang = lang;
     var ls = document.getElementById('langSwitch');
     ls.innerHTML =
