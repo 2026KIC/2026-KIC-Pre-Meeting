@@ -535,7 +535,7 @@
   };
   firebase.initializeApp(firebaseConfig);
   var db = firebase.firestore();
-  var BUILD_ID = '2026-07-08-v12';
+  var BUILD_ID = '2026-07-08-v13';
 
   // ---------------- i18n ----------------
   var TEXT = {
@@ -1128,12 +1128,13 @@
     var btn = this; btn.disabled = true;
     showToast(t('toastExporting'));
     try{
-      var rows = [['Session ID','Session Title (KO)','Session Title (EN)','Respondent Name','Affiliation','Available Times (KST)','Submitted At']];
+      var rows = [['Session Title','Respondent Name','Affiliation','Available Times (KST)','Submitted At']];
       for(var i=0;i<sessionsIndex.length;i++){
         var s = sessionsIndex[i];
         var responses = await fetchResponses(s.id);
+        var sessionTitle = s.titleEn || s.titleKo || s.id;
         responses.forEach(function(r){
-          rows.push([s.id, s.titleKo||'', s.titleEn||'', r.name||'', r.affiliation||'', slotsToReadable(r.slots), r.submittedAt||'']);
+          rows.push([sessionTitle, r.name||'', r.affiliation||'', slotsToReadable(r.slots), r.submittedAt||'']);
         });
       }
       if(rows.length===1){ showToast(t('toastExportEmpty')); btn.disabled=false; return; }
